@@ -1,25 +1,29 @@
 import mongoose, { type Document, Schema } from 'mongoose';
 
 // 1. Modern Rulebook (TypeScript Interface)
-// Yeh batayega ki ZOVIX ke har product mein kya-kya hona zaroori hai
 export interface IProduct extends Document {
     name: string;
     description: string;
-    // Yahan string union hata ke 'ObjectId' use karenge
     category: mongoose.Types.ObjectId | string; 
     mrp: number;
     sellingPrice: number;
     images: { url: string; altText?: string }[];
-    sizes: { size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'; stock: number; sku: string }[];
+    // 'Free Size' yahan add kar diya hai
+    sizes: { 
+        size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'Free Size'; 
+        stock: number; 
+        sku: string 
+    }[];
     isFeatured: boolean;
 }
+
 // 2. Mongoose Schema (Database ka structure)
 const productSchema: Schema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     category: { 
         type: Schema.Types.ObjectId, 
-        ref: 'Category', // Yeh wahi naam hai jo humne Category model mein rakha tha
+        ref: 'Category', 
         required: true 
     },
     mrp: { type: Number, required: true },
@@ -32,7 +36,12 @@ const productSchema: Schema = new Schema({
     ],
     sizes: [
         {
-            size: { type: String, enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], required: true },
+            size: { 
+                type: String, 
+                // Database mein bhi 'Free Size' ko allow kar diya
+                enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'], 
+                required: true 
+            },
             stock: { type: Number, required: true, default: 0 },
             sku: { type: String, required: true }
         }
