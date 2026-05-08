@@ -5,5 +5,5 @@ const router = express.Router();
 
 router.post('/', createCategory); // POST /api/categories
 router.get('/', getCategories);   // GET /api/categories
-router.delete('/', deleteCategory);
+router.delete('/:id', deleteCategory); // Ab ye URL se ID uthayega
 export default router;

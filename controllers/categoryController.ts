@@ -26,8 +26,9 @@ export const getCategories = async (req: Request, res: Response) => {
 };
 export const deleteCategory = async (req: Request, res: Response) => {
     try {
-        await Category.findByIdAndDelete(req.params.id);
-        res.status(200).json({ success: true, message: "Category Deleted" });
+        const { id } = req.params; // Ye tabhi chalega jab route mein :id hoga
+        await Category.findByIdAndDelete(id);
+        res.status(200).json({ success: true, message: "Uda diya bhai!" });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }
