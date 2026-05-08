@@ -1,13 +1,17 @@
 import express from 'express';
-// Apna naya getProductById function import karna mat bhoolna
-import { createProduct, getProducts, getProductById } from '../controllers/productController.js'; // .js lagana zaroori hai
+import { createProduct, getProducts, getProductById } from '../controllers/productController.js';
+
+// 1. Cloudinary wale 'upload' middleware ko import karo
+import { upload } from '../config/cloudinary.js'; 
 
 const router = express.Router();
 
-router.post('/', createProduct);
-router.get('/', getProducts);
+// 2. POST route mein 'upload.single("image")' ghusa do
+// "image" wo naam hai jo hum Frontend ya Postman se bhejenge
+router.post('/', upload.single('image'), createProduct);
 
-// YEH NAYA RASTA HAI: Specific ID ke liye
-router.get('/:id', getProductById); 
+// Baaki routes ekdum same rahenge, unme koi photo ka chakkar nahi hai
+router.get('/', getProducts);
+router.get('/:id', getProductById);
 
 export default router;

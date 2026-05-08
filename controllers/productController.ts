@@ -2,28 +2,44 @@ import { type Request, type Response } from 'express';
 import mongoose from 'mongoose';
 import Product from '../models/Products.js';
 
+// Custom Interface: TypeScript ko batane ke liye ki 'file' property exist karti hai
+interface MulterRequest extends Request {
+  file?: any;
+}
+
 // 1. Naya Product banana (Admin ke liye)
-export const createProduct = async (req: Request, res: Response) => {
-    try {
-        const product = new Product(req.body);
-        const savedProduct = await product.save();
-        res.status(201).json({ 
-            success: true, 
-            message: 'ZOVIX ka naya product successfully add ho gaya!', 
-            data: savedProduct 
-        });
-    } catch (error: any) {
-        res.status(400).json({ success: false, message: error.message });
+export const createProduct = async (req: MulterRequest, res: Response) => {
+  try {
+    // 1. Check karo ki photo aayi hai ya nahi
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Bhai, product ki photo toh daalo!" });
     }
+
+    // 2. req.file.path mein Cloudinary ka naya URL hoga
+    const imageUrl = req.file.path; 
+
+    // 3. Database mein naya product save karo
+    const newProduct = new Product({
+      ...req.body,
+      // Cloudinary ka asli link aur SEO friendly alt text yahan gaya
+      images: [{ url: imageUrl, altText: req.body.name || "Zovix Premium Product" }] 
+    });
+
+    await newProduct.save();
+    return res.status(201).json({ success: true, data: newProduct });
+
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: "Server error, check logs", error: error.message });
+  }
 };
 
 // 2. Saare Products laana (Homepage ke liye)
 export const getProducts = async (req: Request, res: Response) => {
     try {
         const products = await Product.find({});
-        res.status(200).json({ success: true, count: products.length, data: products });
+        return res.status(200).json({ success: true, count: products.length, data: products });
     } catch (error: any) {
-        res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -43,8 +59,8 @@ export const getProductById = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: "Product not found in database" });
     }
 
-    res.status(200).json({ success: true, data: product });
+    return res.status(200).json({ success: true, data: product });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    return res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };

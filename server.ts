@@ -21,11 +21,11 @@ app.use(cors({
 
 // Middleware to parse JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-
 // Server Start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
