@@ -9,6 +9,8 @@ interface MulterRequest extends Request {
 
 // 1. Naya Product banana (Admin ke liye)
 export const createProduct = async (req: MulterRequest, res: Response) => {
+  console.log("FRONTEND SE TEXT AAYA:", req.body);
+console.log("FRONTEND SE PHOTO AAYI:", req.file ? "Haan" : "Nahi");
   try {
     // 1. Check karo ki photo aayi hai ya nahi
     if (!req.file) {
