@@ -5,22 +5,22 @@ import mongoose, { type Document, Schema } from 'mongoose';
 export interface IProduct extends Document {
     name: string;
     description: string;
-    category: 'Loungewear' | 'Nightwear' | 'Co-ord Sets' | 'Tops' | 'Bottoms';
+    // Yahan string union hata ke 'ObjectId' use karenge
+    category: mongoose.Types.ObjectId | string; 
     mrp: number;
     sellingPrice: number;
     images: { url: string; altText?: string }[];
     sizes: { size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'; stock: number; sku: string }[];
     isFeatured: boolean;
 }
-
 // 2. Mongoose Schema (Database ka structure)
-const productSchema = new Schema<IProduct>({
-    name: { type: String, required: true, trim: true },
+const productSchema: Schema = new Schema({
+    name: { type: String, required: true },
     description: { type: String, required: true },
     category: { 
-        type: String, 
-        required: true,
-        enum: ['Loungewear', 'Nightwear', 'Co-ord Sets', 'Tops', 'Bottoms'] 
+        type: Schema.Types.ObjectId, 
+        ref: 'Category', // Yeh wahi naam hai jo humne Category model mein rakha tha
+        required: true 
     },
     mrp: { type: Number, required: true },
     sellingPrice: { type: Number, required: true },
