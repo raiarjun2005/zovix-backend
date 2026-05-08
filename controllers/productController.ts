@@ -31,7 +31,12 @@ console.log("FRONTEND SE PHOTO AAYI:", req.file ? "Haan" : "Nahi");
     return res.status(201).json({ success: true, data: newProduct });
 
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Server error, check logs", error: error.message });
+    console.log("ASLI ERROR YE HAI:", error); // Ye line terminal mein sab sach bata degi
+    return res.status(500).json({ 
+        success: false, 
+        message: "Server error", 
+        error: error.message,
+        fullError: error});
   }
 };
 
