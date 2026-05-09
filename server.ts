@@ -14,12 +14,24 @@ connectDB();
 
 const app = express();
 
-// 1. FIXED CORS: Ab Admin aur Website dono chalenge, aur DELETE bhi allow hoga!
+// 1. BULLETPROOF CORS FIX (Port 3000, 3001 aur Website sab allow)
+const allowedOrigins = [
+  'http://localhost:3000', 
+  'http://localhost:3001', 
+  'https://zovixindia.com', 
+  'https://www.zovixindia.com'
+];
+
 app.use(cors({
-  origin: function(origin, callback) { 
-    return callback(null, true); // Abhi ke liye SABKO allow kar diya taaki glitch theek ho
+  origin: function (origin, callback) {
+    // Agar request Postman se aayi (jiska origin nahi hota) ya hamari list mein se hai
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS Blocked: Ye origin allowed nahi hai!'));
+    }
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // <-- DELETE allow kiya
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   credentials: true
 }));
 
@@ -27,7 +39,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. JASOOS MIDDLEWARE (Ye terminal mein batayega kaunsi link hit hui)
+// 2. JASOOS MIDDLEWARE (Terminal mein batayega kaunsi link hit hui)
 app.use((req, res, next) => {
     console.log(`[${req.method}] Request aayi hai yahan -> ${req.url}`);
     next();
