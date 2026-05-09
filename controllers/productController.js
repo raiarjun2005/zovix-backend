@@ -50,3 +50,4 @@ export const getProductById = async (req, res) => {
     }
 };
 //# sourceMappingURL=productController.js.map
+

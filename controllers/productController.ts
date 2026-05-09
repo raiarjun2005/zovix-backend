@@ -7,28 +7,40 @@ interface MulterRequest extends Request {
   file?: any;
 }
 
-// 1. Naya Product banana
-export const createProduct = async (req: MulterRequest, res: Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "Bhai, product ki photo toh daalo!" });
+export const createProduct = async (req: any, res: any) => {
+    try {
+        // Frontend se aane wala saara data le lo
+        const { name, description, price, category, stock, images, imageUrl, image } = req.body;
+
+        // Smart Logic: Frontend chahe array bheje ya direct link, hum url nikal lenge
+        const finalImageUrl = (images && images.length > 0) ? images[0] : (imageUrl || image);
+
+        // Agar URL nahi mila, tabhi error denge
+        if (!finalImageUrl) {
+            return res.status(400).json({ message: "Bhai, product ki photo toh daalo!" });
+        }
+
+        // Product database mein save karne ka format (Tere Schema ke hisaab se)
+        const newProduct = new Product({
+            name,
+            description,
+            price,
+            category,
+            stock,
+            images: [{ 
+                url: finalImageUrl, 
+                altText: name || "Zovix Premium Product" 
+            }]
+        });
+
+        await newProduct.save();
+        res.status(201).json({ message: "Product add ho gaya makkhan ki tarah!", data: newProduct });
+
+    } catch (error: any) {
+        console.error("Backend Error:", error);
+        res.status(500).json({ message: error.message });
     }
-
-    const imageUrl = req.file.path; 
-
-    const newProduct = new Product({
-      ...req.body,
-      images: [{ url: imageUrl, altText: req.body.name || "Zovix Premium Product" }] 
-    });
-
-    await newProduct.save();
-    return res.status(201).json({ success: true, data: newProduct });
-
-  } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Server error", error: error.message });
-  }
 };
-
 // 2. Saare Products laana (Populate Added ✅)
 export const getProducts = async (req: Request, res: Response) => {
     try {
