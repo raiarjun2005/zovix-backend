@@ -5,6 +5,7 @@ import { connectDB } from './config/db.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js'; // 👈 1. Payment Route Import kiya
 
 // Load environment variables
 dotenv.config();
@@ -14,7 +15,7 @@ connectDB();
 
 const app = express();
 
-// 1. BULLETPROOF CORS FIX (Port 3000, 3001 aur Website sab allow)
+// 1. BULLETPROOF CORS FIX
 const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001', 
@@ -24,7 +25,6 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Agar request Postman se aayi (jiska origin nahi hota) ya hamari list mein se hai
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -49,6 +49,7 @@ app.use((req, res, next) => {
 app.use('/api/categories', categoryRoutes); 
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payment', paymentRoutes); // 👈 2. Payment API endpoint set kar diya
 
 app.get('/', (req, res) => {
   res.send('ZOVIX API is Running... 🚀');
